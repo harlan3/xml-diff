@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<project name="Ant-Test" default="main" basedir=".">
+   <!-- Sets variables which can later be used. -->
+   <!-- The value of a property is accessed via ${} -->
+   <property name="src.dir" location="src" />
+   <property name="build.dir" location="bin" />
+   <property name="lib.dir" location="lib" />
+   <property name="dist.dir" location="dist" />
+   <property name="debuglevel" value="source,lines,vars"/>
+   
+   <!-- Deletes the existing docs, build and dist directory-->
+   <target name="clean">
+      <delete dir="${build.dir}" />
+      <delete dir="${dist.dir}" />
+   </target>
+   
+   <!-- Creates the docs, build and dist directory-->
+   <target name="makedir">
+      <mkdir dir="${build.dir}" />
+      <mkdir dir="${dist.dir}" />
+   </target>
+    
+   <!-- Compiles the data files -->
+   <target name="copy-resources">
+       <copy todir="bin">
+           <fileset dir="src">
+               <!-- Exclude common source code file extensions -->
+               <exclude name="**/*.java"/>
+               <exclude name="**/*.class"/>
+           </fileset>
+       </copy>
+   </target>
+    
+   <!-- Compiles the java code -->
+   <target name="compile" depends="clean, makedir, copy-resources">
+      <javac source="17" target="17" srcdir="${src.dir}" destdir="${build.dir}" debuglevel="${debuglevel}">
+         <classpath>
+            <pathelement path="${lib.dir}\jEditor.jar"/>
+            <pathelement path="${lib.dir}\MDIFramework-swingAll.jar"/>
+            <pathelement path="${lib.dir}\MDIUtilities-core-LGPL.jar"/>
+            <pathelement path="${lib.dir}\MDIUtilities-ui-LGPL.jar"/>
+         </classpath>
+      </javac>
+   </target>
+   
+   <!--Creates the deployable jar file  -->
+   <target name="jar" depends="compile">
+      <jar destfile="${dist.dir}\xmldiff.jar" basedir="${build.dir}">
+         <zipgroupfileset dir="${lib.dir}" includes="jEditor.jar"/>
+         <zipgroupfileset dir="${lib.dir}" includes="MDIFramework-swingAll.jar"/>
+         <zipgroupfileset dir="${lib.dir}" includes="MDIUtilities-core-LGPL.jar"/>
+         <zipgroupfileset dir="${lib.dir}" includes="MDIUtilities-ui-LGPL.jar"/>
+         <manifest>
+            <attribute name="Main-Class" value="org.xmldiff.app.main.XMLDiffGUI"/>
+         </manifest>
+      </jar>
+   </target>
+   
+   <target name="main" depends="compile, jar">
+      <description>Main target</description>
+   </target>
+
+</project>

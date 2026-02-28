@@ -1,0 +1,5 @@
+<arguments> 
+   <argument key="leftFile" type="url" />      
+   <argument key="rightFile" type="url" />   
+   <argument key="rules" type="url" /> 
+</arguments>

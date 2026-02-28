@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<!--
+ Copyright (c) 2024 Herve Girod. All rights reserved.
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+ If you have any questions about this project, you can visit
+ the project website at the project page on https://sourceforge.net/projects/xmldiff/
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:simpleType name="defaultComparisonMode">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="AnyDiffOther"/>            
+         <xs:enumeration value="SameNodeName"/>                                                
+      </xs:restriction>        
+   </xs:simpleType>     
+   <xs:simpleType name="comparisonMode">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="AnyDiffOther"/>            
+         <xs:enumeration value="SameNodeName"/>     
+         <xs:enumeration value="OnAttributes"/>                                             
+      </xs:restriction>        
+   </xs:simpleType>   
+   <xs:simpleType name="trimType">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="No"/>            
+         <xs:enumeration value="TrimRight"/>   
+         <xs:enumeration value="TrimLeft"/>     
+         <xs:enumeration value="Trim"/>                                             
+      </xs:restriction>        
+   </xs:simpleType>  
+   <xs:element name="nodeRules">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="defaultRule" type="defaultRule" />
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="rule" type="nodeRule"/>
+         </xs:sequence>
+         <xs:attribute name="defaultComparisonMode" type="defaultComparisonMode" default="AnyDiffOther"/>
+         <xs:attribute name="orderIsSignificant" type="xs:boolean" default="true"/>
+         <xs:attribute name="excludeCDATA" type="xs:boolean" default="false"/>
+         <xs:attribute name="removeCDATANewLines" type="xs:boolean" default="false"/>
+         <xs:attribute name="desc" type="xs:string" />
+         <xs:attribute name="date" type="xs:string" />         
+      </xs:complexType>
+   </xs:element>
+   <xs:complexType name="defaultRule">
+      <xs:sequence>
+         <xs:element maxOccurs="1" minOccurs="0" name="identification" type="identification"/>
+         <xs:element maxOccurs="1" minOccurs="0" name="excludeAttributes" type="excludeAttributes"/>
+         <xs:element maxOccurs="1" minOccurs="0" name="descriptions" type="descriptions"/>
+         <xs:element maxOccurs="1" minOccurs="0" name="CDATA" type="CDATA"/>
+      </xs:sequence>
+      <xs:attribute name="excludeCDATA" type="xs:boolean" default="false"/>
+      <xs:attribute name="removeCDATANewLines" type="xs:boolean" default="false"/>      
+      <xs:attribute name="orderIsSignificant" type="xs:boolean" default="true"/>
+      <xs:attribute name="comparisonMode" type="comparisonMode" default="AnyDiffOther"/>
+   </xs:complexType>
+   <xs:complexType name="nodeRule">
+      <xs:sequence>
+         <xs:choice maxOccurs="1" minOccurs="0">
+            <xs:element name="extendsDefaultRule" type="extendsDefaultRule"/>
+            <xs:element name="extendsRule" type="extendsRule"/>
+         </xs:choice>
+         <xs:element maxOccurs="1" minOccurs="0" name="appliesOn" type="appliesOn"/>
+         <xs:element maxOccurs="1" minOccurs="0" name="identification" type="identification"/>
+         <xs:element maxOccurs="1" minOccurs="0" name="excludeAttributes" type="excludeAttributes"/>
+         <xs:element maxOccurs="1" minOccurs="0" name="descriptions" type="descriptions"/>
+         <xs:element maxOccurs="1" minOccurs="0" name="CDATA" type="CDATA"/>
+      </xs:sequence>
+      <xs:attribute name="ruleName" type="xs:string" />
+      <xs:attribute name="nodeName" type="xs:string" />
+      <xs:attribute name="excludeCDATA" type="xs:boolean" default="false"/>
+      <xs:attribute name="removeCDATANewLines" type="xs:boolean" default="false"/>  
+      <xs:attribute name="orderIsSignificant" type="xs:boolean" default="true"/>
+      <xs:attribute name="comparisonMode" type="comparisonMode" default="AnyDiffOther"/>
+   </xs:complexType>   
+   <xs:complexType name="extendsDefaultRule"/> 
+   <xs:complexType name="extendsRule">
+      <xs:attribute name="name" type="xs:string" use="required" />
+   </xs:complexType> 
+   <xs:complexType name="identification">
+      <xs:sequence>
+         <xs:element maxOccurs="unbounded" minOccurs="1" name="attribute" type="attribute"/>
+      </xs:sequence>        
+   </xs:complexType>       
+   <xs:complexType name="excludeAttributes">
+      <xs:sequence>
+         <xs:element maxOccurs="unbounded" minOccurs="1" name="attribute" type="attribute"/>
+      </xs:sequence>        
+   </xs:complexType>     
+   <xs:complexType name="descriptions">
+      <xs:sequence>
+         <xs:element maxOccurs="unbounded" minOccurs="0" name="applyRegex" type="regexReplace"/>
+         <xs:element maxOccurs="unbounded" minOccurs="1" name="description" type="attribute"/>
+      </xs:sequence>
+      <xs:attribute name="removeNewLines" type="xs:boolean" default="false"/>     
+      <xs:attribute name="trimType" type="trimType" default="No"/>
+   </xs:complexType>  
+   <xs:complexType name="CDATA">
+      <xs:sequence>
+         <xs:element maxOccurs="unbounded" minOccurs="0" name="applyRegex" type="regexReplace"/>
+      </xs:sequence>      
+      <xs:attribute name="excludeCDATA" type="xs:boolean" default="false"/>
+      <xs:attribute name="removeNewLines" type="xs:boolean" default="false"/> 
+      <xs:attribute name="trimType" type="trimType" default="No"/>     
+   </xs:complexType>   
+   <xs:complexType name="regexReplace">
+      <xs:attribute name="replaceFrom" type="xs:string" use="required" />
+      <xs:attribute name="replaceTo" type="xs:string" use="required" />
+   </xs:complexType>        
+   <xs:complexType name="attribute">
+      <xs:attribute name="name" type="xs:string" use="required" />
+   </xs:complexType>  
+   <xs:complexType name="appliesOn">
+      <xs:sequence>
+         <xs:element maxOccurs="unbounded" minOccurs="1" name="nodeName" type="nodeName"/>
+      </xs:sequence>      
+   </xs:complexType> 
+   <xs:complexType name="nodeName">
+      <xs:attribute name="name" type="xs:string" use="required" />
+   </xs:complexType> 
+</xs:schema>
